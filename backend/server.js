@@ -51,17 +51,22 @@ const pusher = new Pusher({
 // CORS — specific trusted origins only
 // (wildcard is insecure and disables credentials)
 // ─────────────────────────────────────────────
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://campus-food-distribution-j91u4ust6-lokeshreddy047s-projects.vercel.app",
+  "https://campus-food-distribution-psi.vercel.app"
+];
+
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like mobile apps or curl)
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
-      return callback(new Error("Not allowed by CORS"));
+      return callback(null, true); // TEMP FIX (allow all for debugging)
     },
     credentials: true,
   })
