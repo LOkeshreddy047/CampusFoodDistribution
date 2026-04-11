@@ -158,5 +158,12 @@ if (
 app.get('/', (req, res) => {
   res.send('🚀 Server is running...');
 });
+
+app.get("/api", (req, res) => {
+  res.json({
+    status: "OK",
+    message: "API is running"
+  });
+});
 // Export for Vercel serverless
 module.exports = app;
