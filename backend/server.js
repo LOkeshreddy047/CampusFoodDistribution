@@ -55,7 +55,7 @@ app.use(
   cors({
     origin: [
       process.env.FRONTEND_URL || "http://localhost:3000",
-      // Add your production Vercel frontend URL here:
+      "https://campus-food-distribution-psi.vercel.app",
       // "https://campus-food-frontend.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
