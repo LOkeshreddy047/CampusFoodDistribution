@@ -1,8 +1,9 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const nodemailer = require("nodemailer");
 const crypto = require("crypto");
+const { Resend } = require("resend");
+const resend = new Resend(process.env.RESEND_API_KEY);
 const { Redis } = require("@upstash/redis");
 const { User, PendingUser } = require("../models");
 const { authenticate, authorize } = require("../middleware/authMiddleware");
@@ -17,19 +18,7 @@ const redis = Redis.fromEnv();
 // Email Transporter — Connection Pool
 // Keep connections open to reduce per-email overhead
 // ─────────────────────────────────────────────
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  family: 4, // ⭐ FORCE IPv4 (FIXES Railway timeout)
-  tls: {
-    rejectUnauthorized: false,
-  },
-});
+
 
 transporter.verify((error) => {
   if (error) {
@@ -197,22 +186,23 @@ router.post("/register", async (req, res) => {
       verification_expires: otpExpires,
     });
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Verify Your Email - CampusFood",
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
-          <h2 style="color: #444; text-align: center;">Welcome to CampusFood!</h2>
-          <p style="color: #666; text-align: center;">Please verify your email address to continue.</p>
-          <div style="text-align: center; margin: 30px 0;">
-            <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #4CAF50; background: #e8f5e9; padding: 10px 20px; border-radius: 5px; border: 1px dashed #4CAF50;">${otp}</span>
-          </div>
-          <p style="color: #666; text-align: center;">This code expires in 10 minutes.</p>
-        </div>
-      `,
-    };
-
+    try {
+  await resend.emails.send({
+    from: process.env.EMAIL_FROM,
+    to: email,
+    subject: "Verify Your Email - CampusFood",
+    html: `
+      <div style="font-family: Arial; padding:20px">
+        <h2>Welcome to CampusFood</h2>
+        <p>Your OTP is:</p>
+        <h1 style="color:green">${otp}</h1>
+        <p>Valid for 10 minutes</p>
+      </div>
+    `,
+  });
+} catch (emailErr) {
+  console.error("Resend error:", emailErr);
+}
     try {
       if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
         await transporter.sendMail(mailOptions);
