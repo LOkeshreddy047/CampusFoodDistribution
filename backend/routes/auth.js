@@ -20,14 +20,6 @@ const redis = Redis.fromEnv();
 // ─────────────────────────────────────────────
 
 
-transporter.verify((error) => {
-  if (error) {
-    console.error("[MAIL ERROR] Connection failed:", error.message);
-  } else {
-    console.log("[MAIL] Server is ready to send emails");
-  }
-});
-
 // ─────────────────────────────────────────────
 // Request logger — console only (no fs I/O in serverless)
 // ─────────────────────────────────────────────
