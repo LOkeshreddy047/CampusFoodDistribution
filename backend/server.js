@@ -151,6 +151,8 @@ if (
     });
   }
 }
-
+app.get('/', (req, res) => {
+  res.send('🚀 Server is running...');
+});
 // Export for Vercel serverless
 module.exports = app;
