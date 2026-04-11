@@ -18,12 +18,15 @@ const redis = Redis.fromEnv();
 // Keep connections open to reduce per-email overhead
 // ─────────────────────────────────────────────
 const transporter = nodemailer.createTransport({
-  service: "gmail",
-  pool: true,
-  maxConnections: 5,
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false,
   },
 });
 
