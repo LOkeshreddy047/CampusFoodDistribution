@@ -3,7 +3,9 @@ import { getAuth } from "@/lib/auth";
 
 const api = axios.create({
   baseURL: "https://campusfooddistribution-production.up.railway.app/api",
+  withCredentials: true,
 });
+
 
 api.interceptors.request.use((config) => {
   const auth = getAuth();
