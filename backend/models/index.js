@@ -10,7 +10,6 @@ const db = {};
 
 let sequelize;
 
-// ✅ USE DATABASE_URL (for Railway + Supabase)
 if (process.env.DATABASE_URL) {
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
@@ -18,12 +17,11 @@ if (process.env.DATABASE_URL) {
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false,
+        rejectUnauthorized: false, // ✅ THIS FIXES YOUR ERROR
       },
     },
   });
 } else {
-  // fallback for local development
   const config = require(__dirname + '/../config/config.js')[env];
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
