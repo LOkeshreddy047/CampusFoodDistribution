@@ -66,7 +66,7 @@ app.use(
         return callback(null, true);
       }
 
-      return callback(null, true); // TEMP FIX (allow all for debugging)
+      return callback(null, true); // TEMP FIX (ALLOW ALL for debugging)
     },
     credentials: true,
   })
