@@ -3,7 +3,7 @@ const os = require('os');
 const process = require('process');
 
 if (cluster.isPrimary || cluster.isMaster) {
-  const numCPUs = os.cpus().length;
+  const numCPUs = 1; // IMPORTANT: limit workers for cloud DB
   console.log(`🚀 Primary cluster ${process.pid} is running`);
   console.log(`⚙️  Spinning up ${numCPUs} Express workers to handle 10k concurrent requests...`);
 
