@@ -178,33 +178,40 @@ router.post("/register", async (req, res) => {
       verification_expires: otpExpires,
     });
 
-    try {
-  await resend.emails.send({
-    from: process.env.EMAIL_FROM,
-    to: email,
-    subject: "Verify Your Email - CampusFood",
-    html: `
-      <div style="font-family: Arial; padding:20px">
-        <h2>Welcome to CampusFood</h2>
-        <p>Your OTP is:</p>
-        <h1 style="color:green">${otp}</h1>
-        <p>Valid for 10 minutes</p>
-      </div>
-    `,
-  });
-} catch (emailErr) {
-  console.error("Resend error:", emailErr);
-}
-    try {
-      if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-        await transporter.sendMail(mailOptions);
-      } else {
-        console.log(`[DEV] Verification OTP for ${email}: ${otp}`);
-      }
-    } catch (emailErr) {
-      console.error("Email send error:", emailErr.message);
-    }
+    // ─────────────────────────────────────────────
+// Send OTP Email (Resend)
+// ─────────────────────────────────────────────
+try {
+  const emailHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px;">
+      <h2 style="text-align:center;">Welcome to CampusFood</h2>
+      <p style="text-align:center;">Your OTP for verification:</p>
 
+      <div style="text-align:center; font-size:28px; font-weight:bold; letter-spacing:5px; margin:20px 0;">
+        ${otp}
+      </div>
+
+      <p style="text-align:center; color:gray;">
+        This OTP expires in 10 minutes.
+      </p>
+    </div>
+  `;
+
+  if (process.env.RESEND_API_KEY) {
+    await resend.emails.send({
+      from: "CampusFood <onboarding@resend.dev>",
+      to: email,
+      subject: "Verify Your Email - CampusFood",
+      html: emailHtml,
+    });
+  } else {
+    console.log(`[DEV OTP] ${email}: ${otp}`);
+  }
+
+} catch (err) {
+  console.error("Email send error:", err.message);
+}
+    
     res.status(201).json({
       message: "Registration successful. Please check your email for OTP.",
     });
